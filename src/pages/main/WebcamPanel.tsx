@@ -1,17 +1,14 @@
-import { useState } from 'react'
 import styled from 'styled-components'
-import Webcam from 'react-webcam';
+import HandLandmarker from './utils/handLandmarker';
 
 const WebcamPanel = () => {
-    const [urlValue, setUrlValue] = useState('');
-
     return(
         <PanelWrapper>
-            <Webcam/>
+        <HandLandmarker/>
         </PanelWrapper>
     );
 }
-
+    
 const PanelWrapper = styled.div`
 display: flex;
 flex-direction: column;
@@ -21,5 +18,6 @@ border-radius: 20px;
 padding: 20px;
 width: min-content;
 `;
-
-export default WebcamPanel;
+    
+    export default WebcamPanel;
+    
