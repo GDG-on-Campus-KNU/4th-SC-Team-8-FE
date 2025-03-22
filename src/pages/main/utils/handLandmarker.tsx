@@ -7,7 +7,7 @@ import { drawCanvas } from "./drawCanvas";
 
 //https://velog.io/@jsj9620/React-MediaPipe-Hands-%EC%9B%B9%EC%97%90%EC%84%9C-%EB%9D%84%EC%9B%8C%EB%B3%B4%EA%B8%B0
 
-let screenResolution = {x: 560, y: 315};//{x: 1280, y: 720};
+let screenResolution = { x: 560, y: 315 }; //{x: 1280, y: 720};
 
 const HandLandmarker = () => {
   const webcamRef = useRef<Webcam>(null);
@@ -65,30 +65,35 @@ const HandLandmarker = () => {
 
   return (
     <div className={styles.container}>
-    {/* 비디오 캡쳐 */}
-    <Webcam
-      audio={false}
-      style={{ visibility: "hidden" }}
-      width={screenResolution.x}
-      height={screenResolution.y}
-      ref={webcamRef}
-      screenshotFormat="image/jpeg"
-      videoConstraints={{ width: 1280, height: 720, facingMode: "user" }}
-    />
-    {/* 랜드마크를 손에 표시 */}
-    <canvas
-      ref={canvasRef}
-      className={styles.canvas}
-      width={screenResolution.x}
-      height={screenResolution.y}
-    />
-    {/* 좌표 출력 */}
-    <div className={styles.buttonContainer}>
-      <button className={styles.button} onClick={OutputData}>
-        Output Data to console
-      </button>
+      {/* 비디오 캡쳐 */}
+      <>
+        <Webcam
+          audio={false}
+          style={{ visibility: "hidden" }}
+          width={screenResolution.x}
+          height={screenResolution.y}
+          ref={webcamRef}
+          screenshotFormat="image/jpeg"
+          videoConstraints={{
+            width: screenResolution.x,
+            height: screenResolution.y,
+            facingMode: "user",
+          }}
+        />
+        <canvas
+          ref={canvasRef}
+          className={styles.canvas}
+          width={screenResolution.x}
+          height={screenResolution.y}
+        />
+      </>
+      {/* 좌표 출력 */}
+      <div className={styles.buttonContainer}>
+        <button className={styles.button} onClick={OutputData}>
+          Output Data to console
+        </button>
+      </div>
     </div>
-  </div>
   );
 };
 
