@@ -48,7 +48,7 @@ const YoutubeVideoPlayPanel = () => {
 
   /*==========================*/
   const { gameUrl } = useParams<{ gameUrl?: string }>();
-  const [urlValue, setUrlValue] = useState<string | null>(gameUrl); // Allow null
+  const [urlValue, setUrlValue] = useState<string | null>(gameUrl ?? null); // Allow null
 
   return (
     <PanelWrapper>
