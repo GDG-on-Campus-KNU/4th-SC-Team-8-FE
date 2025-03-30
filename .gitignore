@@ -27,3 +27,4 @@ dist-ssr
 @_start.bat
 
 .prettierrc
+.env

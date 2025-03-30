@@ -59,11 +59,15 @@ const UserInfoModal = ({
   };
 
     const [userName, setUserName] = useState("null");
+    const [userEmail, setUserEmail] = useState("null");
   
     useEffect(() => {
       const fetchProfile = async () => {
         const completeProfile = await profile;
-        if (completeProfile != null) setUserName(completeProfile.username);
+        if (completeProfile != null) {
+          setUserName(completeProfile.username);
+          setUserEmail(completeProfile.email);
+        }
       };
   
       fetchProfile();
@@ -85,7 +89,7 @@ const UserInfoModal = ({
         <Form>
           <h1>회원정보</h1>
           <div style={{display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "20px"}}>
-          <p>이메일: test@test.com</p>
+          <p>이메일: {userEmail}</p>
           <p>유저명: {userName}</p>
           </div>
           {showMessage && (

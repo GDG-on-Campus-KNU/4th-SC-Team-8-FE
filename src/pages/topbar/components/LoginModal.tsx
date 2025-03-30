@@ -45,7 +45,7 @@ const RegisterModal = ({ modalOpen, setModalOpen }: { modalOpen: boolean, setMod
         SaveToken(data);
         setIsLoggedIn(true);
         const userInfo = await GetUserInfo(data.accessToken);
-        setProfile((userInfo !== null) ? userInfo : {username: "NULL"});
+        setProfile((userInfo !== null) ? userInfo : {username: "NULL", email: "NULL"});
         setTimeout(() => {CloseAndClearModal();}, 1500);
         break;
         

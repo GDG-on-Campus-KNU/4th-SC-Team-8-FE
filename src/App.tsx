@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import MainPage from "./pages/main/MainPage";
+import GamePage from "./pages/game/gamePage";
 import TopBar from "./pages/topbar/TopBar";
 import {
   AuthContext,
@@ -9,6 +9,12 @@ import {
   CheckTokenValid,
 } from "./shared/auth";
 import { useEffect, useState } from "react";
+import { BrowserView, MobileView } from "react-device-detect";
+import MobileAlert from "./pages/mobile/mobileAlert";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import ErrorPage from "./pages/error/errorPage";
+import MainPage from "./pages/main/mainPage";
+import Footer from "./pages/footer/Footer";
 //https://cocoder16.tistory.com/81
 //https://velog.io/@hidaehyunlee/React-Component%EB%A1%9C-%EC%9B%B9%ED%8E%98%EC%9D%B4%EC%A7%80-%EB%94%94%EC%9E%90%EC%9D%B8%ED%95%98%EA%B8%B0
 
@@ -41,21 +47,43 @@ const App = () => {
   }, []);
 
   return (
-    <AuthContext.Provider
-      value={{ isLoggedIn, profile, setIsLoggedIn, setProfile }}
-    >
-      <Wrapper>
-        <TopBar />
-        <MainPage />
-      </Wrapper>
-    </AuthContext.Provider>
+    <>
+      <BrowserView>
+        <AuthContext.Provider
+          value={{ isLoggedIn, profile, setIsLoggedIn, setProfile }}
+        >
+          <Wrapper>
+            <BrowserRouter>
+              <TopBar />
+              <Content>
+                <Routes>
+                  <Route path="/" element={<MainPage />}></Route>
+                  <Route path="/game/:gameUrl" element={<GamePage />}></Route>
+                  <Route path="*" element={<ErrorPage />}></Route>
+                </Routes>
+              </Content>
+              <Footer></Footer>
+            </BrowserRouter>
+          </Wrapper>
+        </AuthContext.Provider>
+      </BrowserView>
+
+      <MobileView>
+        <MobileAlert />
+      </MobileView>
+    </>
   );
 };
 
 const Wrapper = styled.div`
-  height: 100vh;
-  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
   background-color: white-gray;
+`;
+
+const Content = styled.div`
+  flex: 1;
 `;
 
 export default App;

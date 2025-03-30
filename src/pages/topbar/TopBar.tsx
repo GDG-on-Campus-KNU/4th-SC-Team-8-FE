@@ -9,6 +9,7 @@ import UserInfoModal from "./components/UserInfoModal";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { backend } from "../../shared/ServerEndpoint";
+import logo from "../../assets/logo.webp";
 
 const TopBar = () => {
   const { isLoggedIn } = useContext(AuthContext);
@@ -16,6 +17,7 @@ const TopBar = () => {
   return (
     <>
       <TopBarWrapper>
+        <div style={{display: "flex", justifyContent: "center"}}>
         <InlineDiv
           style={{
             fontFamily: "Sunflower, sans-serif",
@@ -23,8 +25,10 @@ const TopBar = () => {
             fontWeight: "bold",
           }}
         >
-          SC 8팀 수화 동화책 Experimental WEB
+          SignScore
         </InlineDiv>
+          <img src={logo} style={{height: "50px"}}/>
+          </div>
         {isLoggedIn ? <WelcomePanel /> : <LogInPanel />}
       </TopBarWrapper>
     </>
@@ -82,8 +86,8 @@ const WelcomePanel = () => {
       <UserInfoModal
         modalOpen={enableUserInfoForm}
         setModalOpen={setEnableUserInfoForm}
-      />
-      <div
+        />
+        <div
         style={{
           display: "flex",
           gap: "10px",
