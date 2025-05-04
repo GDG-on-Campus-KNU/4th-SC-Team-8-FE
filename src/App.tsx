@@ -15,6 +15,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ErrorPage from "./pages/error/errorPage";
 import MainPage from "./pages/main/mainPage";
 import Footer from "./pages/footer/Footer";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 //https://cocoder16.tistory.com/81
 //https://velog.io/@hidaehyunlee/React-Component%EB%A1%9C-%EC%9B%B9%ED%8E%98%EC%9D%B4%EC%A7%80-%EB%94%94%EC%9E%90%EC%9D%B8%ED%95%98%EA%B8%B0
 
@@ -49,23 +50,26 @@ const App = () => {
   return (
     <>
       <BrowserView>
-        <AuthContext.Provider
-          value={{ isLoggedIn, profile, setIsLoggedIn, setProfile }}
-        >
-          <Wrapper>
-            <BrowserRouter>
-              <TopBar />
-              <Content>
-                <Routes>
-                  <Route path="/" element={<MainPage />}></Route>
-                  <Route path="/game/:gameUrl" element={<GamePage />}></Route>
-                  <Route path="*" element={<ErrorPage />}></Route>
-                </Routes>
-              </Content>
-              <Footer></Footer>
-            </BrowserRouter>
-          </Wrapper>
-        </AuthContext.Provider>
+        <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_OAUTH_CLIENT_KEY}>
+          <AuthContext.Provider
+            value={{ isLoggedIn, profile, setIsLoggedIn, setProfile }}
+          >
+            <Wrapper>
+              <BrowserRouter>
+                <TopBar />
+                <Content>
+                  <Routes>
+                    <Route path="/" element={<MainPage />}></Route>
+                    <Route path="/game/:gameUrl" element={<GamePage />}></Route>
+                    <Route path="/login/oauth2/code/google" element={<MainPage/>}></Route>
+                    <Route path="*" element={<ErrorPage />}></Route>
+                  </Routes>
+                </Content>
+                <Footer></Footer>
+              </BrowserRouter>
+            </Wrapper>
+          </AuthContext.Provider>
+        </GoogleOAuthProvider>
       </BrowserView>
 
       <MobileView>

@@ -3,15 +3,22 @@ import React, { useContext, useEffect, useState } from "react";
 import { Modal } from "@mui/material";
 import { backend } from "../../../shared/ServerEndpoint";
 import { AuthContext, GetUserInfo, SaveToken } from "../../../shared/auth";
+import { useGoogleLogin } from "@react-oauth/google";
 
-const RegisterModal = ({ modalOpen, setModalOpen }: { modalOpen: boolean, setModalOpen: React.Dispatch<React.SetStateAction<boolean>> }) => {
+const RegisterModal = ({
+  modalOpen,
+  setModalOpen,
+}: {
+  modalOpen: boolean;
+  setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
   const [email, setEmail] = useState("");
   const [pswd, setPswd] = useState("");
-  
-  const [message, setMessage] = useState({text: "", color: "red"});
+
+  const [message, setMessage] = useState({ text: "", color: "red" });
   const [showMessage, setShowMessage] = useState(false);
-  
-  const {setIsLoggedIn, setProfile} = useContext(AuthContext);
+
+  const { setIsLoggedIn, setProfile } = useContext(AuthContext);
 
   const CloseAndClearModal = () => {
     setShowMessage(false);
@@ -19,71 +26,176 @@ const RegisterModal = ({ modalOpen, setModalOpen }: { modalOpen: boolean, setMod
     setEmail("");
     setPswd("");
   };
-  
-  const registerUser = async () => {
+
+  const loginUser = async () => {
     const userData = {
       email: email,
-      password: pswd
+      password: pswd,
     };
-    
+
     try {
       const response = await fetch(`${backend}/api/v1/auth/login`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(userData)
+        body: JSON.stringify(userData),
       });
-      
-      switch(response.status) {
+
+      switch (response.status) {
         case 200: // OK
-        // Try to parse the response as JSON
-        const data = await response.json();
-        console.log("Registration successful: ", data);
-        setMessage({text: "로그인 되었습니다.", color: "green"})
-        setShowMessage(true);
-        SaveToken(data);
-        setIsLoggedIn(true);
-        const userInfo = await GetUserInfo(data.accessToken);
-        setProfile((userInfo !== null) ? userInfo : {username: "NULL", email: "NULL"});
-        setTimeout(() => {CloseAndClearModal();}, 1500);
-        break;
-        
+          // Try to parse the response as JSON
+          const data = await response.json();
+          console.log("Login successful: ", data);
+          setMessage({ text: "로그인 되었습니다.", color: "green" });
+          setShowMessage(true);
+          SaveToken(data);
+          setIsLoggedIn(true);
+          const userInfo = await GetUserInfo(data.accessToken);
+          setProfile(
+            userInfo !== null ? userInfo : { username: "NULL", email: "NULL" }
+          );
+          setTimeout(() => {
+            CloseAndClearModal();
+          }, 1500);
+          break;
+
         case 409: // Conflict
         case 401: // Unauthrized
-        // Handle plain text response for conflict (e.g., email already exists)
-        const conflictMessage = await response.json();
-        console.log("Conflict: ", conflictMessage);
-        setMessage({text: /*conflictMessage.detail*/"이메일 또는 비밀번호가 맞지 않습니다.", color: "red"});
-        setShowMessage(true);
-        break;
-        
+          // Handle plain text response for conflict (e.g., email already exists)
+          const conflictMessage = await response.json();
+          console.log("Conflict: ", conflictMessage);
+          setMessage({
+            text: /*conflictMessage.detail*/ "이메일 또는 비밀번호가 맞지 않습니다.",
+            color: "red",
+          });
+          setShowMessage(true);
+          break;
+
         default:
-        console.log("Unexpected status code:", response.status);
-        break;
+          console.log("Unexpected status code:", response.status);
+          break;
       }
     } catch (error) {
       console.error("Error:", error);
     }
-  }; 
-  
-  return(
+  };
+
+  const GoogleSignInButton: React.FC = () => {
+    const redirectLogin = async () => {
+      let redirect_uri = "http://localhost:5173";
+      window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=899302067028-u8tte8dk694o56a3tt2kuie99ub3vomn.apps.googleusercontent.com&redirect_uri=${redirect_uri}/login/oauth2/code/google&response_type=code&scope=email%20profile`;
+      // try {
+      //   const response = await fetch(`${backend}/api/v1/auth/google-code`, {
+      //     method: "GET",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     }
+      //   });
+      //   const data = await response.json();
+      //   console.log("Google sign-in successful: ", data);
+      // } catch (error) {
+      //   console.error("Google sign-in failed:", error);
+      //   setMessage({
+      //     text: "구글 로그인에 실패했습니다.",
+      //     color: "red",
+      //   });
+      //   setShowMessage(true);
+      // }
+    };
+
+    return (
+      <GoogleDesignButton onClick={() => redirectLogin()}>
+        구글 계정으로 로그인
+      </GoogleDesignButton>
+    );
+  };
+
+  return (
     <>
-    <Modal open={modalOpen} onClose={() => {setModalOpen(false)}} style={{display:"flex", justifyContent: "center", alignItems: "center"}}>
-    <Form>
-    <h1>로그인</h1>
-    <InputField type="text" placeholder="이메일" value={email} onChange={(e:React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}/>
-    <InputField type="password" placeholder="비밀번호" value={pswd} onChange={(e:React.ChangeEvent<HTMLInputElement>) => setPswd(e.target.value)}/>
-    {showMessage && <p style={{color: message.color, fontWeight: "bold"}}>{message.text}</p>}
-    <div style={{display: "flex", gap: "5px", alignItems: "stretch", alignSelf:"stretch", height: "3em"}}>
-    <Button onClick={() => {registerUser()}} style={{flex: "2"}}>로그인</Button>
-    <Button onClick={() => {setModalOpen(false); setShowMessage(false);}}>취소</Button>
-    </div>
-    </Form>
-    </Modal>
+      <Modal
+        open={modalOpen}
+        onClose={() => {
+          setModalOpen(false);
+        }}
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Form>
+          <h1>로그인</h1>
+          <InputField
+            type="text"
+            placeholder="이메일"
+            value={email}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setEmail(e.target.value)
+            }
+          />
+          <InputField
+            type="password"
+            placeholder="비밀번호"
+            value={pswd}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setPswd(e.target.value)
+            }
+          />
+          {showMessage && (
+            <p style={{ color: message.color, fontWeight: "bold" }}>
+              {message.text}
+            </p>
+          )}
+            <div
+              style={{
+                display: "flex",
+                gap: "5px",
+                alignItems: "stretch",
+                alignSelf: "stretch",
+                height: "3em",
+              }}
+            >
+              <Button
+                onClick={() => {
+                  loginUser();
+                }}
+                style={{ flex: "2" }}
+              >
+                로그인
+              </Button>
+              <Button
+                onClick={() => {
+                  setModalOpen(false);
+                  setShowMessage(false);
+                }}
+              >
+                취소
+              </Button>
+            </div>
+            <GoogleSignInButton />
+        </Form>
+      </Modal>
     </>
   );
 };
+
+const GoogleDesignButton = styled.button`
+  background-color: #4285f4;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  width: 100%;
+
+  &:hover {
+    background-color: #357ae8;
+  }
+`;
+
+//======================================================================
 
 const boxFade = keyframes`
   0% {
@@ -95,49 +207,51 @@ const boxFade = keyframes`
 `;
 
 const Form = styled.div`
-padding: 30px;
-box-shadow: 0px 5px 15px 0px rgba(0, 0, 0, 0.35);
+  padding: 30px;
+  box-shadow: 0px 5px 15px 0px rgba(0, 0, 0, 0.35);
 
-display: flex;
-flex-direction: column;
-justify-content: center;
-align-items: center;
-gap: 25px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 25px;
 
-border-radius: 10px;
-background-color: white;
+  border-radius: 10px;
+  background-color: white;
 
-animation: ${boxFade} 1s;
+  animation: ${boxFade} 1s;
 `;
 
 const InputField = styled.input`
-width: 250px;
-height: 2em;
-border-radius: 10px;
-border: 0;
-padding: 10px;
-box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+  width: 250px;
+  height: 2em;
+  border-radius: 10px;
+  border: 0;
+  padding: 10px;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
+    rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+    rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
 `;
 
 //======================================================================
 
 const Button = styled.button`
-display: flex;
-justify-content: center;
-align-items: center;
-gap: 5px;
-flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  flex: 1;
 
-border: 1px solid black;
-border-radius: 5px;
-padding: 5px;
-transition: 0.3s;
-
-&:hover {
-  background: black;
-  color: white;
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 5px;
   transition: 0.3s;
-}
+
+  &:hover {
+    background: black;
+    color: white;
+    transition: 0.3s;
+  }
 `;
 
 export default RegisterModal;

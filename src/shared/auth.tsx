@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, createContext } from "react";
+import { Dispatch, SetStateAction, createContext, useContext } from "react";
 import { backend } from "./ServerEndpoint";
 
 interface AuthContextType {
@@ -16,7 +16,7 @@ export const AuthContext = createContext<AuthContextType>({
   isLoggedIn: false,
   profile: null, // Default profile state
   setIsLoggedIn: () => {}, // Placeholder function
-  setProfile: () => {} // Placeholder function
+  setProfile: () => {}, // Placeholder function
 });
 
 export const GetUserInfo = async (token: string) => {
@@ -25,39 +25,38 @@ export const GetUserInfo = async (token: string) => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
     });
-    
-    switch(response.status) {
+
+    switch (response.status) {
       case 200: // OK
-      const data = await response.json();
-      console.log("Get userInfo successful: ", data);
-      return data;
-      
+        const data = await response.json();
+        console.log("Get userInfo successful: ", data);
+        return data;
+
       case 401: // Conflict
-      // Handle plain text response for conflict (e.g., email already exists)
-      const conflictMessage = await response.json();
-      console.log("Conflict: ", conflictMessage);
-      break;
-      
+        // Handle plain text response for conflict (e.g., email already exists)
+        const conflictMessage = await response.json();
+        console.log("Conflict: ", conflictMessage);
+        break;
+
       default:
-      console.log("Unexpected status code:", response.status);
-      break;
+        console.log("Unexpected status code:", response.status);
+        break;
     }
   } catch (error) {
     console.error("Error:", error);
   }
   return null;
-}
-
+};
 
 //======================<Token>======================
 
 export const SaveToken = (data: any) => {
   localStorage.setItem("accessToken", data.accessToken);
   localStorage.setItem("refreshToken", data.refreshToken);
-}
+};
 
 interface AuthData {
   accessToken: string | null;
@@ -67,17 +66,17 @@ interface AuthData {
 export const LoadToken = () => {
   let data: AuthData = {
     accessToken: null,
-    refreshToken: null
+    refreshToken: null,
   };
   data.accessToken = localStorage.getItem("accessToken");
   data.refreshToken = localStorage.getItem("refreshToken");
   return data;
-}
+};
 
 export const RemoveToken = () => {
   localStorage.removeItem("accessToken");
   localStorage.removeItem("refreshToken");
-}
+};
 
 export const CheckTokenValid = async (token: string | null) => {
   try {
@@ -110,3 +109,45 @@ export const CheckTokenValid = async (token: string | null) => {
 };
 
 //======================<Token>======================
+
+//======================<Google>======================
+
+// const { setIsLoggedIn, setProfile } = useContext(AuthContext);
+
+export const GoogleLogin = async (code: string | null) => {
+  try {
+    const response = await fetch(`${backend}/api/v1/auth/google-login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ code: code }),
+    });
+
+    switch (response.status) {
+      case 200: // OK
+        // Try to parse the response as JSON
+        const data = await response.json();
+        console.log("Login successful: ", data);
+        SaveToken(data);
+        const userInfo = await GetUserInfo(data.accessToken);
+        setProfile(
+          userInfo !== null ? userInfo : { username: "NULL", email: "NULL" }
+        );
+        break;
+
+      case 409: // Conflict
+      case 401: // Unauthrized
+        // Handle plain text response for conflict (e.g., email already exists)
+        const conflictMessage = await response.json();
+        console.log("Conflict: ", conflictMessage);
+        break;
+
+      default:
+        console.log("Unexpected status code:", response.status);
+        break;
+    }
+  } catch (error) {
+    console.error("Error:", error);
+  }
+};
