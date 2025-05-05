@@ -25,5 +25,5 @@
 .dummy {
   width: min-content;
   justify-content: space-evenly;
-
+  border-top-left-radius: ;
 }

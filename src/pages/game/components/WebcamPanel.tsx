@@ -15,7 +15,8 @@ const WebcamPanel = () => {
       style={{ width: screenResolution.x, height: screenResolution.y }}
     >
       {cameraEnabled ? (
-        <PostureLandmarker/>// <HandLandmarker />
+        // <PostureLandmarker/>
+        <HandLandmarker />
       ) : (
         <WebCamAccessButton
           onClick={() => {

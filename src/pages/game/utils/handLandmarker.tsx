@@ -4,6 +4,7 @@ import { css } from "@emotion/css";
 import { Camera } from "@mediapipe/camera_utils";
 import { Hands, Results } from "@mediapipe/hands";
 import { drawCanvas } from "./drawCanvas";
+import { useLandmarkContext } from "../gamePage";
 
 //https://velog.io/@jsj9620/React-MediaPipe-Hands-%EC%9B%B9%EC%97%90%EC%84%9C-%EB%9D%84%EC%9B%8C%EB%B3%B4%EA%B8%B0
 
@@ -13,20 +14,22 @@ const HandLandmarker = () => {
   const webcamRef = useRef<Webcam>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const resultsRef = useRef<Results>(null);
-
+  const { setLandmarks } = useLandmarkContext();
   /**
    * 검출결과（프레임마다 호출됨）
    * @param results
    */
   const onResults = useCallback((results: Results) => {
     resultsRef.current = results;
-
+    setLandmarks(results);
     const canvasCtx = canvasRef.current!.getContext("2d")!;
     drawCanvas(canvasCtx, results);
   }, []);
 
   // 초기 설정
   useEffect(() => {
+    setLandmarks(resultsRef.current);
+
     const hands = new Hands({
       locateFile: (file) => {
         return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
@@ -75,6 +78,7 @@ const HandLandmarker = () => {
           ref={webcamRef}
           screenshotFormat="image/jpeg"
           videoConstraints={{
+            // frameRate: { ideal: 30, max: 60 },
             width: screenResolution.x,
             height: screenResolution.y,
             facingMode: "user",

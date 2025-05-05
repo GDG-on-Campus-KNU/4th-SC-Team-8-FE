@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { useEffect, useState } from "react";
 import YouTubeVideoDetails from "./utils/YoutubeVideoDetails";
+import VideoCard from "./utils/VideoCard";
 import { GoogleLogin } from "../../shared/auth";
 //https://developers.google.com/identity/sign-in/web/sign-in?hl=ko
 import { fetchRandomVideos } from "./apis/YoutubeVideoFetchAPI";
@@ -85,7 +86,7 @@ const MainPage = () => {
             <Button>검색</Button>
           </div>
         </SubDiv1>
-        <SubDiv2>
+        {/* <SubDiv2>
           <p>바로 플레이 하세요!</p>
           <button
             onClick={() => {
@@ -105,7 +106,18 @@ const MainPage = () => {
               ))
             )}
           </VideoListWrapper>
-        </SubDiv2>
+        </SubDiv2> */}
+        <VideoCardWrapper>
+            {loading ? (
+              <p>Loading...</p>
+            ) : (
+              randomVideos.map((video, index) => (
+                <div key={index}>
+                  <VideoCard videoUrl={video.youtubeLink} />
+                </div>
+              ))
+            )}
+          </VideoCardWrapper>
       </PanelDiv>
     </>
   );
@@ -162,8 +174,12 @@ const SubDiv2 = styled.div`
   background: #333;
 `;
 
-const VideoListWrapper = styled.div`
-  max-height: 400px;
+const VideoCardWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 50px;
+  max-height: 73.5vh;
   overflow-y: auto;
 
   -ms-overflow-style: none; /* IE and Edge */

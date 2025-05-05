@@ -11,8 +11,8 @@ export default defineConfig({
         target: "http://34.64.111.10:8080",
         changeOrigin: true,
         secure: false
-      }
-    }
+      },
+    },
   },
   //==============================Proxy<RemoveLater>==============================
 })
