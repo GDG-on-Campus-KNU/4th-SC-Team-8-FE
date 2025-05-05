@@ -1,10 +1,11 @@
 import styled from "styled-components";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import YouTubeVideoDetails from "./utils/YoutubeVideoDetails";
 import VideoCard from "./utils/VideoCard";
-import { GoogleLogin } from "../../shared/auth";
 //https://developers.google.com/identity/sign-in/web/sign-in?hl=ko
 import { fetchRandomVideos } from "./apis/YoutubeVideoFetchAPI";
+import { AuthContext, GetUserInfo, SaveToken } from "../../shared/auth";
+import { backend } from "../../shared/ServerEndpoint";
 
 const MainPage = () => {
   const [randomVideos, setRandomVideos] = useState<{ youtubeLink: string }[]>(
@@ -59,6 +60,47 @@ const MainPage = () => {
       setLoading(false);
     }
   };
+
+  const {setProfile} = useContext(AuthContext);
+
+  const GoogleLogin = async (code: string | null) => {
+    try {
+      const response = await fetch(`${backend}/api/v1/auth/google-login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ code: code }),
+      });
+  
+      switch (response.status) {
+        case 200: // OK
+          // Try to parse the response as JSON
+          const data = await response.json();
+          console.log("Login successful: ", data);
+          SaveToken(data);
+          const userInfo = await GetUserInfo(data.accessToken);
+          setProfile(
+            userInfo !== null ? userInfo : { username: "NULL", email: "NULL" }
+          );
+          break;
+  
+        case 409: // Conflict
+        case 401: // Unauthrized
+          // Handle plain text response for conflict (e.g., email already exists)
+          const conflictMessage = await response.json();
+          console.log("Conflict: ", conflictMessage);
+          break;
+  
+        default:
+          console.log("Unexpected status code:", response.status);
+          break;
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+  
 
   const handlGoogleLogin = async () => {
     const url = window.location.href;
