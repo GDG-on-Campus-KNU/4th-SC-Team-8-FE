@@ -25,7 +25,7 @@ const TopBar = () => {
             fontWeight: "bold",
           }}
         >
-          SignScore
+          Signory
         </InlineDiv>
           <img src={logo} style={{height: "50px"}}/>
           </div>
