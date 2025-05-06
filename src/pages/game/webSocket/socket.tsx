@@ -130,3 +130,39 @@ async def main():
 if __name__ == "__main__":
     asyncio.run(main())
 */
+
+//WebSocket python code 2
+/*
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+import json
+import random
+
+#uvicorn main:app --reload --port 8765
+app = FastAPI()
+clients = set()
+
+async def sendScore(score):
+    for socket in clients:
+        await socket.send_text(str(score))
+
+@app.websocket("/")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    clients.add(websocket)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            landmarks = json.loads(data)
+            print(landmarks["multiHandLandmarks"])
+            print(landmarks["multiHandWorldLandmarks"])
+            print(landmarks["multiHandedness"])
+
+            score = 0
+            ## 점수 연산로직
+            score += random.randint(0, 100)
+
+            await sendScore(score)
+    except WebSocketDisconnect:
+        clients.remove(websocket)
+        print("Client disconnected")
+*/

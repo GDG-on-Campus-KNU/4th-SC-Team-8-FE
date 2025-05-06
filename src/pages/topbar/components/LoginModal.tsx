@@ -81,36 +81,6 @@ const RegisterModal = ({
     }
   };
 
-  const GoogleSignInButton: React.FC = () => {
-    const redirectLogin = async () => {
-      let redirect_uri = "http://localhost:5173";
-      window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=899302067028-u8tte8dk694o56a3tt2kuie99ub3vomn.apps.googleusercontent.com&redirect_uri=${redirect_uri}/login/oauth2/code/google&response_type=code&scope=email%20profile`;
-      // try {
-      //   const response = await fetch(`${backend}/api/v1/auth/google-code`, {
-      //     method: "GET",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //     }
-      //   });
-      //   const data = await response.json();
-      //   console.log("Google sign-in successful: ", data);
-      // } catch (error) {
-      //   console.error("Google sign-in failed:", error);
-      //   setMessage({
-      //     text: "구글 로그인에 실패했습니다.",
-      //     color: "red",
-      //   });
-      //   setShowMessage(true);
-      // }
-    };
-
-    return (
-      <GoogleDesignButton onClick={() => redirectLogin()}>
-        구글 계정으로 로그인
-      </GoogleDesignButton>
-    );
-  };
-
   return (
     <>
       <Modal
@@ -173,7 +143,6 @@ const RegisterModal = ({
                 취소
               </Button>
             </div>
-            <GoogleSignInButton />
         </Form>
       </Modal>
     </>

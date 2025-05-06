@@ -10,6 +10,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { backend } from "../../shared/ServerEndpoint";
 import logo from "../../assets/logo.webp";
+import googleLogo from "../../assets/googleLogo.png";
 
 const TopBar = () => {
   const { isLoggedIn } = useContext(AuthContext);
@@ -17,18 +18,19 @@ const TopBar = () => {
   return (
     <>
       <TopBarWrapper>
-        <div style={{display: "flex", justifyContent: "center"}}>
-        <InlineDiv
-          style={{
-            fontFamily: "Sunflower, sans-serif",
-            fontSize: "40px",
-            fontWeight: "bold",
-          }}
-        >
-          Signory
-        </InlineDiv>
-          <img src={logo} style={{height: "50px"}}/>
-          </div>
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <InlineDiv
+            style={{
+              fontFamily: "Sunflower, sans-serif",
+              fontSize: "40px",
+              fontWeight: "bold",
+            }}
+          >
+            Signory
+          </InlineDiv>
+          <img src={logo} style={{ height: "50px" }} />
+        </div>
+
         {isLoggedIn ? <WelcomePanel /> : <LogInPanel />}
       </TopBarWrapper>
     </>
@@ -47,7 +49,7 @@ const fetchLogout = async () => {
 
     switch (response.status) {
       case 200: // OK
-      console.log("Logged out successfully");
+        console.log("Logged out successfully");
         return true;
 
       case 401: // Conflict
@@ -86,8 +88,8 @@ const WelcomePanel = () => {
       <UserInfoModal
         modalOpen={enableUserInfoForm}
         setModalOpen={setEnableUserInfoForm}
-        />
-        <div
+      />
+      <div
         style={{
           display: "flex",
           gap: "10px",
@@ -136,6 +138,7 @@ const LogInPanel = () => {
         setModalOpen={setEnableRegisterForm}
       />
       <div style={{ display: "flex", gap: "10px", paddingRight: "5px" }}>
+      <GoogleSignInButton />
         <Button
           onClick={() => {
             setEnableLoginForm(!enableLoginForm);
@@ -157,7 +160,56 @@ const LogInPanel = () => {
   );
 };
 
+const GoogleSignInButton: React.FC = () => {
+  const redirectLogin = async () => {
+    let redirect_uri = "http://localhost:5173";
+    window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=899302067028-u8tte8dk694o56a3tt2kuie99ub3vomn.apps.googleusercontent.com&redirect_uri=${redirect_uri}/login/oauth2/code/google&response_type=code&scope=email%20profile`;
+    // try {
+    //   const response = await fetch(`${backend}/api/v1/auth/google-code`, {
+    //     method: "GET",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     }
+    //   });
+    //   const data = await response.json();
+    //   console.log("Google sign-in successful: ", data);
+    // } catch (error) {
+    //   console.error("Google sign-in failed:", error);
+    //   setMessage({
+    //     text: "구글 로그인에 실패했습니다.",
+    //     color: "red",
+    //   });
+    //   setShowMessage(true);
+    // }
+  };
+
+  return (
+    <GoogleDesignButton onClick={() => redirectLogin()}>
+      <img src={googleLogo} style={{height: "20px", background: "white", borderRadius: "20px"}}/>
+      구글 계정으로 로그인
+    </GoogleDesignButton>
+  );
+};
+
 //======================================================================
+
+const GoogleDesignButton = styled.button`
+  background-color: #4285f4;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  &:hover {
+    background-color: #357ae8;
+  }
+`;
 
 const Button = styled.button`
   display: flex;

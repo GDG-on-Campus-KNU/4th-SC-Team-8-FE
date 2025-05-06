@@ -122,9 +122,10 @@ const MainPage = () => {
     <>
       <PanelDiv>
         <SubDiv1>
-          <p>원하시는 동영상이 있나요?</p>
-          <div style={{display: "flex"}}>
-            <input type="text" />
+          <h2>찾으시는 동영상이 있으신가요?</h2>
+          <p>원하시는 수화 동영상 링크를 넣어주세요!</p>
+          <div style={{display: "flex", justifyContent: "center", width: "100%", gap: "10px"}}>
+            <Input type="text" placeholder="https://www.youtube.com/watch?v=HRWakz9pnnY"/>
             <Button>검색</Button>
           </div>
         </SubDiv1>
@@ -165,14 +166,23 @@ const MainPage = () => {
   );
 };
 
+const Input = styled.input`
+  width: 400px;
+  height: 30px;
+  padding-left: 5px;
+  border: 1px solid black;
+  border-radius: 10px;
+`;
+
 const Button = styled.button`
+  width: 50px;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 5px;
 
   border: 1px solid black;
-  border-radius: 5px;
+  border-radius: 10px;
   padding: 5px;
   transition: 0.3s;
 
@@ -196,8 +206,8 @@ const SubDiv1 = styled.div`
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  font-size: 25px;
-  color: black;
+  gap: 5px;
+
   background: white;
   border: 1px solid #333;
   border-radius: 10px;
