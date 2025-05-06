@@ -6,6 +6,8 @@ import VideoCard from "./utils/VideoCard";
 import { fetchRandomVideos } from "./apis/YoutubeVideoFetchAPI";
 import { AuthContext, GetUserInfo, SaveToken } from "../../shared/auth";
 import { backend } from "../../shared/ServerEndpoint";
+import VideoSearch from "./components/VideoSearch";
+import VideoCardPlaceHolder from "./components/VideoCardPlaceHolder";
 
 const MainPage = () => {
   const [randomVideos, setRandomVideos] = useState<{ youtubeLink: string }[]>(
@@ -61,7 +63,7 @@ const MainPage = () => {
     }
   };
 
-  const {setProfile} = useContext(AuthContext);
+  const { setProfile } = useContext(AuthContext);
 
   const GoogleLogin = async (code: string | null) => {
     try {
@@ -72,7 +74,7 @@ const MainPage = () => {
         },
         body: JSON.stringify({ code: code }),
       });
-  
+
       switch (response.status) {
         case 200: // OK
           // Try to parse the response as JSON
@@ -84,14 +86,14 @@ const MainPage = () => {
             userInfo !== null ? userInfo : { username: "NULL", email: "NULL" }
           );
           break;
-  
+
         case 409: // Conflict
         case 401: // Unauthrized
           // Handle plain text response for conflict (e.g., email already exists)
           const conflictMessage = await response.json();
           console.log("Conflict: ", conflictMessage);
           break;
-  
+
         default:
           console.log("Unexpected status code:", response.status);
           break;
@@ -100,7 +102,7 @@ const MainPage = () => {
       console.error("Error:", error);
     }
   };
-  
+
 
   const handlGoogleLogin = async () => {
     const url = window.location.href;
@@ -121,14 +123,7 @@ const MainPage = () => {
   return (
     <>
       <PanelDiv>
-        <SubDiv1>
-          <h2>찾으시는 동영상이 있으신가요?</h2>
-          <p>원하시는 수화 동영상 링크를 넣어주세요!</p>
-          <div style={{display: "flex", justifyContent: "center", width: "100%", gap: "10px"}}>
-            <Input type="text" placeholder="https://www.youtube.com/watch?v=HRWakz9pnnY"/>
-            <Button>검색</Button>
-          </div>
-        </SubDiv1>
+        <VideoSearch />
         {/* <SubDiv2>
           <p>바로 플레이 하세요!</p>
           <button
@@ -150,69 +145,17 @@ const MainPage = () => {
             )}
           </VideoListWrapper>
         </SubDiv2> */}
-        <VideoCardWrapper>
-            {loading ? (
-              <p>Loading...</p>
-            ) : (
-              randomVideos.map((video, index) => (
-                <div key={index}>
-                  <VideoCard videoUrl={video.youtubeLink} />
-                </div>
-              ))
-            )}
-          </VideoCardWrapper>
+        <VideoCardPlaceHolder loading={loading} randomVideos={randomVideos} />
       </PanelDiv>
     </>
   );
 };
-
-const Input = styled.input`
-  width: 400px;
-  height: 30px;
-  padding-left: 5px;
-  border: 1px solid black;
-  border-radius: 10px;
-`;
-
-const Button = styled.button`
-  width: 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 5px;
-
-  border: 1px solid black;
-  border-radius: 10px;
-  padding: 5px;
-  transition: 0.3s;
-
-  &:hover {
-    background: black;
-    color: white;
-    transition: 0.3s;
-  }
-`;
 
 const PanelDiv = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
   padding: 10px;
-`;
-
-const SubDiv1 = styled.div`
-  flex: 3;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  gap: 5px;
-
-  background: white;
-  border: 1px solid #333;
-  border-radius: 10px;
-  box-shadow: 0px 5px 15px 0px rgba(0, 0, 0, 0.35);
-  padding: 20px;
 `;
 
 const SubDiv2 = styled.div`
@@ -224,21 +167,6 @@ const SubDiv2 = styled.div`
   font-size: 25px;
   color: #fff;
   background: #333;
-`;
-
-const VideoCardWrapper = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 50px;
-  max-height: 73.5vh;
-  overflow-y: auto;
-
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
-  &::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, and Opera */
-  }
 `;
 
 export default MainPage;
