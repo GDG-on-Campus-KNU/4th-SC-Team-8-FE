@@ -70,7 +70,7 @@ function Socket() {
         <p>--- 1: 연결됨</p>
         <p>--- 2: 연결끊는중</p>
         <p>--- 3: 연결끊김</p>
-        <input type="text" placeholder="ws://xxx.xxx.xxx.xxx:x" value="ws://localhost:8765" onChange={(e) => setRep(e.target.value)} />
+        <input type="text" placeholder="ws://xxx.xxx.xxx.xxx:x" value={rep} onChange={(e) => setRep(e.target.value)} />
         <div style={{ display: "flex", flexDirection: "column" }}>
           <button onClick={() => {
             setWebsocket(new WebSocket(rep));
