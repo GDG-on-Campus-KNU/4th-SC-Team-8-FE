@@ -4,27 +4,27 @@ import WebcamPanel from './components/WebcamPanel';
 import Socket from "./webSocket/socket";
 import { ai } from '../../shared/ServerEndpoint';
 import styled from 'styled-components';
+import { useParams } from 'react-router-dom';
 // import PostureLandmarker from './utils/postureLandmarker';
 // import YoutubeHandTracking from './utils/youtubeHandTracking';
 
+//sendSubtitleRequest("https://www.youtube.com/watch?v=gI5uNff3kbM");
 //Ex: sendSubtitleRequest("https://www.youtube.com/watch?v=gI5uNff3kbM");
 //To be implemented... captions are separated apart, unable to use it...
-// function sendSubtitleRequest(youtubeUrl: string) {
-//     fetch(`${ai}/get_subtitle`, {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json'
-//         },
-//         body: JSON.stringify({ url: youtubeUrl, lang: "ko" })
-//     })
-//         .then(response => response.json())
-//         .then(data => {
-//             console.log(data);
-//         })
-//         .catch(error => {
-//             console.error('Error:', error);
-//         });
-// }
+function sendSubtitleRequest(youtubeUrl: string) {
+    return fetch(`${ai}/get_subtitle`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ url: youtubeUrl, lang: "ko" })
+    })
+        .then(response => response.json())
+        .catch(error => {
+            console.error('Error:', error);
+            return null;
+        });
+}
 
 
 interface LandmarkContextProps {
@@ -43,7 +43,23 @@ export const useLandmarkContext = () => {
 };
 
 const GamePage = () => {
-    const [landmarks, setLandmarks] = useState();
+    const { gameUrl } = useParams<{ gameUrl?: string }>();
+    const [landmarks, setLandmarks] = useState(null);
+    const [captions, setCaptions] = useState(null);
+
+    useEffect(() => {
+        async function fetchCaptions() {
+            let caps: any = await sendSubtitleRequest(`https://www.youtube.com/watch?v=${gameUrl}`);
+            setCaptions(caps.captions);
+        };
+        fetchCaptions();
+    }, []);
+
+    useEffect(() => {
+        console.log(captions);
+    }, [captions]);
+
+
 
     // useEffect(() => {
     //     console.log(landmarks);
@@ -53,9 +69,9 @@ const GamePage = () => {
     return (
         <>
             <LandmarkContext.Provider value={{ landmarks, setLandmarks }}>
-                <Socket></Socket>
+                <Socket/>
                 <PanelWrapper>
-                    <YoutubeVideoPlayPanel />
+                    <YoutubeVideoPlayPanel captions={captions}/>
                     <WebcamPanel />
                 </PanelWrapper>
                 {/* <PostureLandmarker/> */}
