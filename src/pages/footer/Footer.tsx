@@ -22,7 +22,7 @@ const Footer = () => {
         <Link to="/">
           <p style={{ fontSize: 25, color: "white"}}>메인 패널</p>
         </Link>
-        <Link to="/game/null">
+        <Link to="/game/X7OtYqOl2L0">
           <p style={{ fontSize: 25, color: "white"}}>트래킹 패널</p>
         </Link>
         <Link to="error">

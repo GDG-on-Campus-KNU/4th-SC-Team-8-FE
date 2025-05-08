@@ -112,7 +112,7 @@ const MainPage = () => {
       const params = new URLSearchParams(match[0]);
       code = params.get("code");
     }
-    GoogleLogin(code);
+    if (code) GoogleLogin(code);
   };
 
   useEffect(() => {

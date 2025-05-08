@@ -5,18 +5,18 @@ import YoutubeHandTracking from "../utils/youtubeHandTracking";
 import { PanelWrapper } from "../../../globalStyle";
 import { useParams } from "react-router-dom";
 import { useLandmarkContext } from "../gamePage";
+import { screenResolution } from "../utils/handLandmarker";
 
 //https://www.youtube.com/watch?v=42fmMP81EvA&t=854s
 //https://www.youtube.com/watch?v=HRWakz9pnnY
 // videoId : https://www.youtube.com/watch?v={videoId} 유튜브 링크의 끝부분에 있는 고유한 아이디
 // const dummyKey = 'HRWakz9pnnY';
 
-const YoutubeVideoPlayPanel = ({ captions }: any) => {
+const YoutubeVideoPlayPanel = ({ captions, displayCaption, setDisplayCaption}: any) => {
   const playerRef = useRef<any>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [playingState, setPlayingState] = useState(false);
   const captionCounterRef = useRef(0);
-  const [caption, setCaption] = useState("여기에 자막이 표시됩니다.");
   const waitTime = 3000;
 
   //=============<Landmarks>==============
@@ -101,7 +101,7 @@ const YoutubeVideoPlayPanel = ({ captions }: any) => {
   };
   const logLandmark = useRef(false);
   const landmarkDataOverCaption = useRef<LandmarkData>({ total_frame: 0, script: "", start_ms: 0, end_ms: 0, data: [], is_last_sentence: false });
-  const { landmarks } = useLandmarkContext();
+  const { socket, landmarks } = useLandmarkContext();
 
   const lastAddTime = useRef<number>(0);
   const captureRate = 30;
@@ -117,6 +117,23 @@ const YoutubeVideoPlayPanel = ({ captions }: any) => {
   }, [landmarks]);
   //=============<Landmarks>==============
 
+  function updateCaption() {
+    setDisplayCaption(captions[captionCounterRef.current]?.segs[0].utf8 || '');
+  }
+
+  function startTime(caption: any) {
+    return caption.tStartMs / 1000
+  }
+
+  function endTime(caption: any) {
+    return (caption.tStartMs + caption.dDurationMs) / 1000
+  }
+
+  function sendData() {
+    console.log(landmarkDataOverCaption.current);
+    socket.current?.send(JSON.stringify(landmarkDataOverCaption.current));
+  }
+
   useEffect(() => {
     if (!captions || captions.length === 0) return;
 
@@ -125,25 +142,27 @@ const YoutubeVideoPlayPanel = ({ captions }: any) => {
         const time = playerRef.current.getCurrentTime();
         const currentCaption = captions[captionCounterRef.current];
 
-        if (currentCaption && time > currentCaption.start && captions[captionCounterRef.current].paused == null) {
-          if (currentCaption && time > currentCaption.start && captionCounterRef.current === 0) {
-            setCaption(captions[captionCounterRef.current]?.text || '');
+        if (currentCaption && time > startTime(currentCaption) && captions[captionCounterRef.current].paused == null) {
+          if (currentCaption && time > startTime(currentCaption) && captionCounterRef.current === 0) {
+            updateCaption();
           }
           captions[captionCounterRef.current].paused = true;
-          console.log(landmarkDataOverCaption.current);
+          if (captionCounterRef.current != 0) {
+            sendData();
+          }
           logLandmark.current = false;
           playerRef.current.pauseVideo();
-          resetData(currentCaption.text, currentCaption.start * 1000, (currentCaption.start + currentCaption.dur) * 1000, captionCounterRef.current == captions.length - 1);
+          resetData(currentCaption.text, startTime(currentCaption) * 1000, endTime(currentCaption) * 1000, captionCounterRef.current == captions.length - 1);
           setTimeout(() => {
             playerRef.current.playVideo();
             logLandmark.current = true;
           }, waitTime);
         }
-        if (currentCaption && time > currentCaption.start + currentCaption.dur) {
+        if (currentCaption && time > endTime(currentCaption)) {
           logLandmark.current = false;
           const nextCounter = captionCounterRef.current + 1;
           captionCounterRef.current = nextCounter;
-          setCaption(captions[nextCounter]?.text || '');
+          updateCaption();
         }
 
         setCurrentTime(time);
@@ -178,20 +197,40 @@ const YoutubeVideoPlayPanel = ({ captions }: any) => {
 
   return (
     <PanelWrapper>
-      <ButtonWrapper>
+      {/* <ButtonWrapper>
         <Button onClick={() => { setTime(-3) }}>⏪︎</Button>
         <Button onClick={setPause}>{playingState ? "⏵︎" : "⏸︎"}</Button>
         <Button onClick={() => { setTime(3) }}>⏩︎</Button>
-      </ButtonWrapper>
-      <p>현재 시간: {currentTime.toFixed(2)}초</p>
-      <p>현재 자막 시작:{captions == null ? "-" : (captions[captionCounterRef.current].start.toFixed(2))}초</p>
-      <p>현재 자막 끝:{captions == null ? "-" : (captions[captionCounterRef.current].start + captions[captionCounterRef.current].dur).toFixed(2)}초</p>
+      </ButtonWrapper> */}
+      {/* <p>현재 시간: {currentTime.toFixed(2)}초</p>
+      <p>현재 자막 시작:{captions == null ? "-" : startTime(captions[captionCounterRef.current]).toFixed(2)}초</p>
+      <p>현재 자막 끝:{captions == null ? "-" : endTime(captions[captionCounterRef.current]).toFixed(2)}초</p> */}
+      <div className="youtube panel dimmer" style={{
+        width: screenResolution.x,
+        height: screenResolution.y,
+        position: "absolute",
+        backgroundColor: `rgba(0, 0, 0, ${playingState || currentTime === 0 ? 0 : 0.5})`,
+        transition: "all 0.5s ease-in-out",
+        pointerEvents: "none",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}>
+        <h1 style={{
+        color: `rgba(255, 255, 255, ${playingState || currentTime === 0 ? 0 : 1})`,
+        transition: "all 0.5s ease-in-out",
+        pointerEvents: "none",
+      }}>곧 동작이 시작됩니다. 준비해주세요!</h1>
+      <p>{}</p>
+      </div>
       <YouTube
         onReady={onReady}
+        onPlay={() => setPlayingState(true)}
+        onPause={() => setPlayingState(false)}
         videoId={urlValue ?? undefined}
         opts={{
-          width: "560",
-          height: "315",
+          width: screenResolution.x,//"560",
+          height: screenResolution.y,//"315",
           playerVars: {
             autoplay: 0,
             rel: 0,
@@ -208,7 +247,6 @@ const YoutubeVideoPlayPanel = ({ captions }: any) => {
           e.target.stopVideo(0);
         }}
       />
-      <p>현재 문장: {caption}</p>
     </PanelWrapper>
   );
 };

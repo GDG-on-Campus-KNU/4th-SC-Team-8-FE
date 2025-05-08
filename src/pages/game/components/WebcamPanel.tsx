@@ -1,12 +1,9 @@
 import styled from "styled-components";
-import HandLandmarker from "../utils/handLandmarker";
-// import PostureLandmarker from './utils/postureLandmarker';
+import HandLandmarker, { screenResolution } from "../utils/handLandmarker";
 import { PanelWrapper } from "../../../globalStyle";
 import { useState } from "react";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import PostureLandmarker from "../utils/postureLandmarker";
-
-let screenResolution = { x: 560, y: 315 }; //{x: 1280, y: 720};
 
 const WebcamPanel = () => {
   const [cameraEnabled, setCameraEnabled] = useState(false);
