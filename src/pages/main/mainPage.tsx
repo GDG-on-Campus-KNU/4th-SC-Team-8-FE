@@ -63,7 +63,7 @@ const MainPage = () => {
     }
   };
 
-  const { setProfile } = useContext(AuthContext);
+  const { isLoggedIn, setProfile, setIsLoggedIn } = useContext(AuthContext);
 
   const GoogleLogin = async (code: string | null) => {
     try {
@@ -85,6 +85,7 @@ const MainPage = () => {
           setProfile(
             userInfo !== null ? userInfo : { username: "NULL", email: "NULL" }
           );
+          setIsLoggedIn(true);
           break;
 
         case 409: // Conflict
@@ -122,7 +123,7 @@ const MainPage = () => {
   return (
     <>
       <PanelDiv>
-        <VideoSearch />
+        <VideoSearch isLoggedIn={isLoggedIn} />
         {/* <SubDiv2>
           <p>바로 플레이 하세요!</p>
           <button

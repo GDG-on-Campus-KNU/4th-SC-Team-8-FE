@@ -73,7 +73,7 @@ const handleVideoRequest = async (url: String) => {
   return false;
 };
 
-const VideoSearch = () => {
+const VideoSearch = ({ isLoggedIn }: any) => {
   const [url, setUrl] = useState<string>("");
   const [showPanel, setShowPanel] = useState<Boolean>(false);
   const [result, setResult] = useState<string>("none");
@@ -90,52 +90,61 @@ const VideoSearch = () => {
 
   return (
     <VideoSearchPanelWrapper>
-      <h2>찾으시는 동영상이 있으신가요?</h2>
-      <p>원하시는 수화 동영상 링크를 넣어주세요!</p>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          width: "100%",
-          gap: "10px",
-        }}
-      >
-        <Input
-          type="text"
-          placeholder="https://www.youtube.com/watch?v=HRWakz9pnnY"
-          onChange={(e) => setUrl(e.target.value)}
-        />
-        <Button onClick={ButtonHandler}>검색</Button>
-      </div>
-      {showPanel &&
-        (result === "yes" ? (
-          <>
-            바로 재생하실 수 있어요!
-            <VideoCardDetail videoUrl={url} />
-          </>
-        ) : (
-          <>
-            영상이 존재하지 않아요, 영상 처리를 요청할까요?
-            <Button
-              onClick={() => {
-                const handleVideoProc = async () => {
-                  if (await handleVideoRequest(url)) {
-                    alert(
-                      "영상 처리가 요청되었어요, 처리가 끝나면 이메일로 알려드려요."
-                    );
-                    setShowPanel(false);
-                  } else {
-                    alert("이 영상은 영상 처리를 요청할 수 없어요.");
-                    setShowPanel(false);
-                  }
-                };
-                handleVideoProc();
-              }}
-            >
-              요청하기
-            </Button>
-          </>
-        ))}
+      {isLoggedIn ? (
+        <>
+          <h2>찾으시는 동영상이 있으신가요?</h2>
+          <p>원하시는 수화 동영상 링크를 넣어주세요!</p>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              width: "100%",
+              gap: "10px",
+            }}
+          >
+            <Input
+              type="text"
+              placeholder="https://www.youtube.com/watch?v=HRWakz9pnnY"
+              onChange={(e) => setUrl(e.target.value)}
+            />
+            <Button onClick={ButtonHandler}>검색</Button>
+          </div>
+          {showPanel &&
+            (result === "yes" ? (
+              <>
+                바로 재생하실 수 있어요!
+                <VideoCardDetail videoUrl={url} />
+              </>
+            ) : (
+              <>
+                영상이 존재하지 않아요, 영상 처리를 요청할까요?
+                <Button
+                  onClick={() => {
+                    const handleVideoProc = async () => {
+                      if (await handleVideoRequest(url)) {
+                        alert(
+                          "영상 처리가 요청되었어요, 처리가 끝나면 이메일로 알려드려요."
+                        );
+                        setShowPanel(false);
+                      } else {
+                        alert("이 영상은 영상 처리를 요청할 수 없어요.");
+                        setShowPanel(false);
+                      }
+                    };
+                    handleVideoProc();
+                  }}
+                >
+                  요청하기
+                </Button>
+              </>
+            ))}
+        </>
+      ) : (
+        <>
+          <p>영상 검색 기능을 사용하려면</p>
+          <p>로그인이 필요합니다</p>
+        </>
+      )}
     </VideoSearchPanelWrapper>
   );
 };
