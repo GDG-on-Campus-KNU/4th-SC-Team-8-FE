@@ -12,7 +12,7 @@ import { screenResolution } from "../utils/handLandmarker";
 // videoId : https://www.youtube.com/watch?v={videoId} 유튜브 링크의 끝부분에 있는 고유한 아이디
 // const dummyKey = 'HRWakz9pnnY';
 
-const YoutubeVideoPlayPanel = ({ captions, setDisplayCaption}: any) => {
+const YoutubeVideoPlayPanel = ({ captions, setDisplayCaption }: any) => {
   const playerRef = useRef<any>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [playingState, setPlayingState] = useState(false);
@@ -70,37 +70,69 @@ const YoutubeVideoPlayPanel = ({ captions, setDisplayCaption}: any) => {
     is_last_sentence: boolean;
   };
 
-  const resetData = (scr: any, sm: number, em: number, ils: any) => landmarkDataOverCaption.current = { total_frame: 0, script: scr, start_ms: sm, end_ms: em, data: [], is_last_sentence: ils };
+  const resetData = (scr: any, sm: number, em: number, ils: any) =>
+    (landmarkDataOverCaption.current = {
+      total_frame: 0,
+      script: scr,
+      start_ms: sm,
+      end_ms: em,
+      data: [],
+      is_last_sentence: ils,
+    });
   const addData = (landmarks: any) => {
-    let lFrame = { frame: landmarkDataOverCaption.current.total_frame, left_hand_landmarks: null, right_hand_landmarks: null };
+    if (!playingState) return;
+    let lFrame = {
+      frame: landmarkDataOverCaption.current.total_frame,
+      left_hand_landmarks: null,
+      right_hand_landmarks: null,
+    };
     switch (landmarks.multiHandedness.length) {
       case 0:
         console.log(`No hand`);
         break;
       case 1:
         console.log(`${landmarks.multiHandedness[0].label} hand`);
-        if (landmarks.multiHandedness[0].label == 'Right') {
-          lFrame.left_hand_landmarks = landmarks.multiHandLandmarks[0].map((landmark: any) => ({ x: landmark.x, y: landmark.y, z: landmark.z }));
+        if (landmarks.multiHandedness[0].label == "Right") {
+          lFrame.left_hand_landmarks = landmarks.multiHandLandmarks[0].map(
+            (landmark: any) => ({ x: landmark.x, y: landmark.y, z: landmark.z })
+          );
         } else {
-          lFrame.right_hand_landmarks = landmarks.multiHandLandmarks[0].map((landmark: any) => ({ x: landmark.x, y: landmark.y, z: landmark.z }));
+          lFrame.right_hand_landmarks = landmarks.multiHandLandmarks[0].map(
+            (landmark: any) => ({ x: landmark.x, y: landmark.y, z: landmark.z })
+          );
         }
         break;
       case 2:
         console.log(`Both hand`);
-        if (landmarks.multiHandedness[0].label == 'Right') {
-          lFrame.left_hand_landmarks = landmarks.multiHandLandmarks[0].map((landmark: any) => ({ x: landmark.x, y: landmark.y, z: landmark.z }));
-          lFrame.right_hand_landmarks = landmarks.multiHandLandmarks[1].map((landmark: any) => ({ x: landmark.x, y: landmark.y, z: landmark.z }));
+        if (landmarks.multiHandedness[0].label == "Right") {
+          lFrame.left_hand_landmarks = landmarks.multiHandLandmarks[0].map(
+            (landmark: any) => ({ x: landmark.x, y: landmark.y, z: landmark.z })
+          );
+          lFrame.right_hand_landmarks = landmarks.multiHandLandmarks[1].map(
+            (landmark: any) => ({ x: landmark.x, y: landmark.y, z: landmark.z })
+          );
         } else {
-          lFrame.left_hand_landmarks = landmarks.multiHandLandmarks[1].map((landmark: any) => ({ x: landmark.x, y: landmark.y, z: landmark.z }));
-          lFrame.right_hand_landmarks = landmarks.multiHandLandmarks[0].map((landmark: any) => ({ x: landmark.x, y: landmark.y, z: landmark.z }));
+          lFrame.left_hand_landmarks = landmarks.multiHandLandmarks[1].map(
+            (landmark: any) => ({ x: landmark.x, y: landmark.y, z: landmark.z })
+          );
+          lFrame.right_hand_landmarks = landmarks.multiHandLandmarks[0].map(
+            (landmark: any) => ({ x: landmark.x, y: landmark.y, z: landmark.z })
+          );
         }
         break;
     }
     landmarkDataOverCaption.current.data.push(lFrame);
-    landmarkDataOverCaption.current.total_frame += 1
+    landmarkDataOverCaption.current.total_frame += 1;
   };
   const logLandmark = useRef(false);
-  const landmarkDataOverCaption = useRef<LandmarkData>({ total_frame: 0, script: "", start_ms: 0, end_ms: 0, data: [], is_last_sentence: false });
+  const landmarkDataOverCaption = useRef<LandmarkData>({
+    total_frame: 0,
+    script: "",
+    start_ms: 0,
+    end_ms: 0,
+    data: [],
+    is_last_sentence: false,
+  });
   const { socket, landmarks } = useLandmarkContext();
 
   const lastAddTime = useRef<number>(0);
@@ -118,15 +150,15 @@ const YoutubeVideoPlayPanel = ({ captions, setDisplayCaption}: any) => {
   //=============<Landmarks>==============
 
   function updateCaption() {
-    setDisplayCaption(captions[captionCounterRef.current]?.segs[0].utf8 || '');
+    setDisplayCaption(captions[captionCounterRef.current]?.segs[0].utf8 || "");
   }
 
   function startTime(caption: any) {
-    return caption.tStartMs / 1000
+    return caption.tStartMs / 1000;
   }
 
   function endTime(caption: any) {
-    return (caption.tStartMs + caption.dDurationMs) / 1000
+    return (caption.tStartMs + caption.dDurationMs) / 1000;
   }
 
   function sendData() {
@@ -142,8 +174,16 @@ const YoutubeVideoPlayPanel = ({ captions, setDisplayCaption}: any) => {
         const time = playerRef.current.getCurrentTime();
         const currentCaption = captions[captionCounterRef.current];
 
-        if (currentCaption && time > startTime(currentCaption) && captions[captionCounterRef.current].paused == null) {
-          if (currentCaption && time > startTime(currentCaption) && captionCounterRef.current === 0) {
+        if (
+          currentCaption &&
+          time > startTime(currentCaption) &&
+          captions[captionCounterRef.current].paused == null
+        ) {
+          if (
+            currentCaption &&
+            time > startTime(currentCaption) &&
+            captionCounterRef.current === 0
+          ) {
             updateCaption();
           }
           captions[captionCounterRef.current].paused = true;
@@ -152,7 +192,12 @@ const YoutubeVideoPlayPanel = ({ captions, setDisplayCaption}: any) => {
           }
           logLandmark.current = false;
           playerRef.current.pauseVideo();
-          resetData(currentCaption.text, startTime(currentCaption) * 1000, endTime(currentCaption) * 1000, captionCounterRef.current == captions.length - 1);
+          resetData(
+            currentCaption.text,
+            startTime(currentCaption) * 1000,
+            endTime(currentCaption) * 1000,
+            captionCounterRef.current == captions.length - 1
+          );
           setTimeout(() => {
             playerRef.current.playVideo();
             logLandmark.current = true;
@@ -205,23 +250,34 @@ const YoutubeVideoPlayPanel = ({ captions, setDisplayCaption}: any) => {
       {/* <p>현재 시간: {currentTime.toFixed(2)}초</p>
       <p>현재 자막 시작:{captions == null ? "-" : startTime(captions[captionCounterRef.current]).toFixed(2)}초</p>
       <p>현재 자막 끝:{captions == null ? "-" : endTime(captions[captionCounterRef.current]).toFixed(2)}초</p> */}
-      <div className="youtube panel dimmer" style={{
-        width: screenResolution.x,
-        height: screenResolution.y,
-        position: "absolute",
-        backgroundColor: `rgba(0, 0, 0, ${playingState || currentTime === 0 ? 0 : 0.5})`,
-        transition: "all 0.5s ease-in-out",
-        pointerEvents: "none",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}>
-        <h1 style={{
-        color: `rgba(255, 255, 255, ${playingState || currentTime === 0 ? 0 : 1})`,
-        transition: "all 0.5s ease-in-out",
-        pointerEvents: "none",
-      }}>곧 동작이 시작됩니다. 준비해주세요!</h1>
-      <p>{}</p>
+      <div
+        className="youtube panel dimmer"
+        style={{
+          width: screenResolution.x,
+          height: screenResolution.y,
+          position: "absolute",
+          backgroundColor: `rgba(0, 0, 0, ${
+            playingState || currentTime === 0 ? 0 : 0.5
+          })`,
+          transition: "all 0.5s ease-in-out",
+          pointerEvents: "none",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <h1
+          style={{
+            color: `rgba(255, 255, 255, ${
+              playingState || currentTime === 0 ? 0 : 1
+            })`,
+            transition: "all 0.5s ease-in-out",
+            pointerEvents: "none",
+          }}
+        >
+          곧 동작이 시작됩니다. 준비해주세요!
+        </h1>
+        <p>{}</p>
       </div>
       <YouTube
         onReady={onReady}
@@ -229,8 +285,8 @@ const YoutubeVideoPlayPanel = ({ captions, setDisplayCaption}: any) => {
         onPause={() => setPlayingState(false)}
         videoId={urlValue ?? undefined}
         opts={{
-          width: screenResolution.x,//"560",
-          height: screenResolution.y,//"315",
+          width: screenResolution.x, //"560",
+          height: screenResolution.y, //"315",
           playerVars: {
             autoplay: 0,
             rel: 0,
@@ -252,8 +308,8 @@ const YoutubeVideoPlayPanel = ({ captions, setDisplayCaption}: any) => {
 };
 
 const ButtonWrapper = styled.div`
-display: flex;
-gap: 5px;
+  display: flex;
+  gap: 5px;
 `;
 
 const Button = styled.button`

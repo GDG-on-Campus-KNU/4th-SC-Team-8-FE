@@ -13,8 +13,8 @@
   -moz-osx-font-smoothing: grayscale;
 } */
 /* https://fonts.google.com/selection/embed */
-@import url('https://fonts.googleapis.com/css2?family=Sunflower:wght@300&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=42dot+Sans:wght@300..800&family=Sunflower:wght@300&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Sunflower:wght@300&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=42dot+Sans:wght@300..800&family=Sunflower:wght@300&display=swap");
 
 * {
   margin: 0;
@@ -25,5 +25,4 @@
 .dummy {
   width: min-content;
   justify-content: space-evenly;
-  border-top-left-radius: ;
 }

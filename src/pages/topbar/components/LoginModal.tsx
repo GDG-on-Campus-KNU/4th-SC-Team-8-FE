@@ -3,7 +3,6 @@ import React, { useContext, useEffect, useState } from "react";
 import { Modal } from "@mui/material";
 import { backend } from "../../../shared/ServerEndpoint";
 import { AuthContext, GetUserInfo, SaveToken } from "../../../shared/auth";
-import { useGoogleLogin } from "@react-oauth/google";
 
 const RegisterModal = ({
   modalOpen,
@@ -117,32 +116,32 @@ const RegisterModal = ({
               {message.text}
             </p>
           )}
-            <div
-              style={{
-                display: "flex",
-                gap: "5px",
-                alignItems: "stretch",
-                alignSelf: "stretch",
-                height: "3em",
+          <div
+            style={{
+              display: "flex",
+              gap: "5px",
+              alignItems: "stretch",
+              alignSelf: "stretch",
+              height: "3em",
+            }}
+          >
+            <Button
+              onClick={() => {
+                loginUser();
+              }}
+              style={{ flex: "2" }}
+            >
+              로그인
+            </Button>
+            <Button
+              onClick={() => {
+                setModalOpen(false);
+                setShowMessage(false);
               }}
             >
-              <Button
-                onClick={() => {
-                  loginUser();
-                }}
-                style={{ flex: "2" }}
-              >
-                로그인
-              </Button>
-              <Button
-                onClick={() => {
-                  setModalOpen(false);
-                  setShowMessage(false);
-                }}
-              >
-                취소
-              </Button>
-            </div>
+              취소
+            </Button>
+          </div>
         </Form>
       </Modal>
     </>
