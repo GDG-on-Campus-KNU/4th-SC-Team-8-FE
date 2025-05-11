@@ -50,7 +50,9 @@ const App = () => {
   return (
     <>
       <BrowserView>
-        <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_OAUTH_CLIENT_KEY}>
+        <GoogleOAuthProvider
+          clientId={import.meta.env.VITE_GOOGLE_OAUTH_CLIENT_KEY}
+        >
           <AuthContext.Provider
             value={{ isLoggedIn, profile, setIsLoggedIn, setProfile }}
           >
@@ -61,7 +63,10 @@ const App = () => {
                   <Routes>
                     <Route path="/" element={<MainPage />}></Route>
                     <Route path="/game/:gameUrl" element={<GamePage />}></Route>
-                    <Route path="/login/oauth2/code/google" element={<MainPage/>}></Route>
+                    <Route
+                      path="/login/oauth2/code/google"
+                      element={<MainPage />}
+                    ></Route>
                     <Route path="*" element={<ErrorPage />}></Route>
                   </Routes>
                 </Content>

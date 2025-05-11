@@ -12,7 +12,7 @@ import { screenResolution } from "../utils/handLandmarker";
 // videoId : https://www.youtube.com/watch?v={videoId} 유튜브 링크의 끝부분에 있는 고유한 아이디
 // const dummyKey = 'HRWakz9pnnY';
 
-const YoutubeVideoPlayPanel = ({ captions, displayCaption, setDisplayCaption}: any) => {
+const YoutubeVideoPlayPanel = ({ captions, setDisplayCaption}: any) => {
   const playerRef = useRef<any>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [playingState, setPlayingState] = useState(false);
