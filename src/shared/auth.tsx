@@ -108,4 +108,38 @@ export const CheckTokenValid = async (token: string | null) => {
   return false;
 };
 
+export const RefreshToken = async () => {
+  let tokens = LoadToken();
+  try {
+    const response = await fetch(`${backend}/api/v1/auth/refresh`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        refreshToken: tokens.refreshToken,
+      }),
+    });
+
+    switch (response.status) {
+      case 200: // OK
+        console.log("Token refreshed");
+        let data = await response.json();
+        SaveToken(data);
+        return true;
+
+      case 401: // Conflict
+        console.log("Token not valid");
+        break;
+
+      default:
+        console.log("Unexpected status code:", response.status);
+        break;
+    }
+  } catch (error) {
+    console.error("Error:", error);
+  }
+  return false;
+};
+
 //======================<Token>======================

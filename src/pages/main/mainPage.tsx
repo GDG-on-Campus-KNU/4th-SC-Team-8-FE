@@ -103,7 +103,6 @@ const MainPage = () => {
     }
   };
 
-
   const handlGoogleLogin = async () => {
     const url = window.location.href;
     const match = url.match(/\?.*/);
