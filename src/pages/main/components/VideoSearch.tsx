@@ -4,7 +4,7 @@ import { backend } from "../../../shared/ServerEndpoint";
 import { LoadToken } from "../../../shared/auth";
 import VideoCardDetail from "../utils/VideoCardDetail";
 
-const CheckVideoExist = async (url : String) => {
+const CheckVideoExist = async (url: String) => {
   try {
     const response = await fetch(`${backend}/api/v1/game/check-link`, {
       method: "POST",
@@ -13,8 +13,8 @@ const CheckVideoExist = async (url : String) => {
         Authorization: `Bearer ${LoadToken().accessToken}`,
       },
       body: JSON.stringify({
-        "youtubeLink": url,
-      })
+        youtubeLink: url,
+      }),
     });
 
     switch (response.status) {
@@ -29,7 +29,7 @@ const CheckVideoExist = async (url : String) => {
 
       case 409:
         return true;
-      
+
       default:
         console.log("Unexpected status code:", response.status);
         break;
@@ -37,20 +37,56 @@ const CheckVideoExist = async (url : String) => {
   } catch (error) {
     console.error("Error:", error);
   }
-}
+};
+
+const handleVideoRequest = async (url: String) => {
+  try {
+    const response = await fetch(`${backend}/api/v1/game`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${LoadToken().accessToken}`,
+      },
+      body: JSON.stringify({
+        youtubeLink: url,
+      }),
+    });
+
+    switch (response.status) {
+      case 200:
+        const msg = await response.json();
+        console.log("Request Success", msg.message);
+        return true;
+
+      case 401:
+        const conflictMessage = await response.json();
+        console.log("Conflict: ", conflictMessage);
+        return false;
+
+      default:
+        console.log("Unexpected status code:", response.status);
+        break;
+    }
+  } catch (error) {
+    console.error("Error:", error);
+  }
+  return false;
+};
 
 const VideoSearch = () => {
   const [url, setUrl] = useState<string>("");
   const [showPanel, setShowPanel] = useState<Boolean>(false);
+  const [result, setResult] = useState<string>("none");
 
   const ButtonHandler = async () => {
     let exist = await CheckVideoExist(url);
+    setShowPanel(true);
     if (exist) {
-      setShowPanel(true);
+      setResult("yes");
     } else {
-
+      setResult("no");
     }
-  }
+  };
 
   return (
     <VideoSearchPanelWrapper>
@@ -72,10 +108,34 @@ const VideoSearch = () => {
         <Button onClick={ButtonHandler}>검색</Button>
       </div>
       {showPanel &&
-      <>
-      바로 재생하실 수 있어요!
-      <VideoCardDetail videoUrl={url}/>
-      </>}
+        (result === "yes" ? (
+          <>
+            바로 재생하실 수 있어요!
+            <VideoCardDetail videoUrl={url} />
+          </>
+        ) : (
+          <>
+            영상이 존재하지 않아요, 영상 처리를 요청할까요?
+            <Button
+              onClick={() => {
+                const handleVideoProc = async () => {
+                  if (await handleVideoRequest(url)) {
+                    alert(
+                      "영상 처리가 요청되었어요, 처리가 끝나면 이메일로 알려드려요."
+                    );
+                    setShowPanel(false);
+                  } else {
+                    alert("이 영상은 영상 처리를 요청할 수 없어요.");
+                    setShowPanel(false);
+                  }
+                };
+                handleVideoProc();
+              }}
+            >
+              요청하기
+            </Button>
+          </>
+        ))}
     </VideoSearchPanelWrapper>
   );
 };
@@ -89,7 +149,7 @@ const Input = styled.input`
 `;
 
 const Button = styled.button`
-  width: 50px;
+  width: fit-content;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -97,7 +157,7 @@ const Button = styled.button`
 
   border: 1px solid black;
   border-radius: 10px;
-  padding: 5px;
+  padding: 5px 20px 5px 20px;
   transition: 0.3s;
 
   &:hover {

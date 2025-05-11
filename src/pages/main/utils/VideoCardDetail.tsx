@@ -76,7 +76,7 @@ const Button = styled.button`
 `;
 
 const YTBoxWrapper = styled.div`
-  width: 80%;
+  width: 500px;
   border: 0px solid black;
   display: flex;
   flex-direction: column;
@@ -99,6 +99,7 @@ const CaptionWrapper = styled.div`
     font-size: 15px;
     overflow: hidden;
   }
+  gap: 10px;
 `;
 
 export default VideoCardDetail;

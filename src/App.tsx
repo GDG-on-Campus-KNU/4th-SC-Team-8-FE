@@ -25,7 +25,7 @@ const App = () => {
 
   useEffect(() => {
     const checkLoginStatus = async () => {
-      const token = LoadToken().accessToken;
+      const token = () => LoadToken().accessToken;
 
       if (!token) {
         setIsLoggedIn(false);
@@ -33,10 +33,10 @@ const App = () => {
         return;
       }
 
-      const tokenValid = await CheckTokenValid(token);
+      const tokenValid = await CheckTokenValid(token());
       if (tokenValid || (await RefreshToken())) {
         setIsLoggedIn(true);
-        const userInfo = await GetUserInfo(token);
+        const userInfo = await GetUserInfo(token());
         setProfile(userInfo !== null ? userInfo : { username: "NULL" });
       } else {
         RemoveToken();
@@ -49,13 +49,6 @@ const App = () => {
 
   return (
     <>
-      <button
-        onClick={() => {
-          RefreshToken();
-        }}
-      >
-        AAA
-      </button>
       <BrowserView>
         <AuthContext.Provider
           value={{ isLoggedIn, profile, setIsLoggedIn, setProfile }}

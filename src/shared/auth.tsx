@@ -19,7 +19,7 @@ export const AuthContext = createContext<AuthContextType>({
   setProfile: () => {}, // Placeholder function
 });
 
-export const GetUserInfo = async (token: string) => {
+export const GetUserInfo = async (token: string | null) => {
   try {
     const response = await fetch(`${backend}/api/v1/mypage/info`, {
       method: "GET",
