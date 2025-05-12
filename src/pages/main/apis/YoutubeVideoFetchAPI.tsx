@@ -1,5 +1,29 @@
 import { backend } from "../../../shared/ServerEndpoint";
 
+export const fetchDBHash = async () => {
+  try {
+    const response = await fetch(`${backend}/api/v1/game/hash`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    switch (response.status) {
+      case 200: // OK
+        const data = await response.text();
+        console.log("Got DB hash: ", data);
+        return data;
+
+      default:
+        console.log("Unexpected status code:", response.status);
+        break;
+    }
+  } catch (error) {
+    console.error("Error:", error);
+  }
+};
+
 export const fetchRandomVideos = async (
   setRandomVideos: (data: { youtubeLink: string }[]) => void
 ) => {

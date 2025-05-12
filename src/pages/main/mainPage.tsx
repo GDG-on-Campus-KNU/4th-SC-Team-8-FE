@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import YouTubeVideoDetails from "./utils/YoutubeVideoDetails";
 import VideoCard from "./utils/VideoCard";
 //https://developers.google.com/identity/sign-in/web/sign-in?hl=ko
-import { fetchRandomVideos } from "./apis/YoutubeVideoFetchAPI";
+import { fetchDBHash, fetchRandomVideos } from "./apis/YoutubeVideoFetchAPI";
 import { AuthContext, GetUserInfo, SaveToken } from "../../shared/auth";
 import { backend } from "../../shared/ServerEndpoint";
 import VideoSearch from "./components/VideoSearch";
@@ -37,9 +37,12 @@ const MainPage = () => {
 
     const cachedVideos = localStorage.getItem("randomVideos");
     const lastFetchTime = localStorage.getItem("lastFetchTime");
-    const oneDay = 24 * 60 * 60 * 1000; // One day in milliseconds
-
+    const oneDay = (24 * 60 * 60 * 1000) / 12; // One day in milliseconds
+    const dbHash = localStorage.getItem("dbHash");
+    const realDBHash = await fetchDBHash();
+    if (realDBHash) localStorage.setItem("dbHash", realDBHash);
     if (
+      dbHash == realDBHash &&
       cachedVideos &&
       lastFetchTime &&
       Date.now() - parseInt(lastFetchTime) < oneDay
