@@ -11,7 +11,9 @@ import WebcamPanel from "./components/WebcamPanel";
 import { ai, aiws } from "../../shared/ServerEndpoint";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
-import geminiLogo from "../../assets/geminiLogo.png";
+import GeminiPromptPanel, {
+  GeminiCoverPanel,
+} from "./components/GeminiPromptPanel";
 // import PostureLandmarker from './utils/postureLandmarker';
 // import YoutubeHandTracking from './utils/youtubeHandTracking';
 
@@ -83,6 +85,7 @@ const GamePage = () => {
       console.log("자막 요청, 대기중...");
       setCaptionState("orange");
       let caps: any = await sendSubtitleRequest(youtubeURL);
+      console.log("caps => ", caps);
       if (caps && caps.status == "success") {
         console.log("자막 반환됨: ", caps);
         setCaptions(caps.subtitle.events);
@@ -257,6 +260,8 @@ const GamePage = () => {
     }
   }
 
+  const [openGemini, setOpenGemini] = useState<boolean>(false);
+
   return (
     <>
       <LandmarkContext.Provider value={{ socket, landmarks, setLandmarks }}>
@@ -325,9 +330,19 @@ const GamePage = () => {
               ref={canvasRef}
             ></canvas>
           </CanvasDisplay>
-          <GeminiHelper>
-            <img src={geminiLogo} height={75}></img>
-            <p>AI 도우미</p>
+          <GeminiHelper
+            open={openGemini}
+            onClick={() => !openGemini && setOpenGemini(true)}
+          >
+            {openGemini ? (
+              <GeminiPromptPanel
+                setOpenGemini={setOpenGemini}
+                scoreHistory={scoreHistory}
+                captionHistory={captionHistory}
+              />
+            ) : (
+              <GeminiCoverPanel />
+            )}
           </GeminiHelper>
         </PanelWrapper>
       </LandmarkContext.Provider>
@@ -335,24 +350,28 @@ const GamePage = () => {
   );
 };
 
-const GeminiHelper = styled.div`
-  width: 120px;
-  height: 120px;
+const GeminiHelper = styled.div<{ open: boolean }>`
+  width: ${(props) => (props.open ? 400 : 120)}px;
+  height: ${(props) => (props.open ? 190 : 120)}px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   box-shadow: 0px 5px 15px 0px rgba(0, 0, 0, 0.35);
   padding: 10px;
-  border-radius: 100px;
+  border-radius: ${(props) => (props.open ? 10 : 120)}px;
   transition: all 0.5s ease-in-out;
 
-  &:hover {
-    font-size: 20px;
-    transform: scale(1.05);
-    background-color: rgb(100, 100, 100);
-    color: white;
-  }
+  ${(props) =>
+    !props.open &&
+    `
+    &:hover {
+      font-size: 20px;
+      transform: scale(1.05);
+      background-color: rgb(100, 100, 100);
+      color: white;
+    }
+  `}
 `;
 
 const CanvasDisplay = styled.div`
