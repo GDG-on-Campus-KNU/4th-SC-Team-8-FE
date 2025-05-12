@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { backend } from "../../../shared/ServerEndpoint";
 import { LoadToken } from "../../../shared/auth";
 import VideoCardDetail from "../utils/VideoCardDetail";
+import { BarLoader, DotLoader, MoonLoader } from "react-spinners";
 
 const CheckVideoExist = async (url: String) => {
   try {
@@ -54,13 +55,25 @@ const handleVideoRequest = async (url: String) => {
 
     switch (response.status) {
       case 200:
-        const msg = await response.json();
-        console.log("Request Success", msg.message);
+        // const msg = await response.json();
+        // console.log("Request Success", msg.message);
+        alert("영상 처리가 요청되었어요, 처리가 끝나면 이메일로 알려드려요.");
         return true;
 
+      case 400:
+        console.log("Conflict: ", await response.json());
+        alert("랜드마크 추출에 실패했어요, 이 영상은 처리가 불가능 해요.");
+        return false;
+
+      // Login pre-checked
       case 401:
-        const conflictMessage = await response.json();
-        console.log("Conflict: ", conflictMessage);
+        console.log("Conflict: ", await response.json());
+        alert("영상");
+        return false;
+
+      case 409:
+        console.log("Conflict: ", await response.json());
+        alert("영상이 이미 존재해요, 검색에 뜨지 않는다면 조금 기다려 주세요.");
         return false;
 
       default:
@@ -122,19 +135,16 @@ const VideoSearch = ({ isLoggedIn }: any) => {
                   onClick={() => {
                     const handleVideoProc = async () => {
                       if (await handleVideoRequest(url)) {
-                        alert(
-                          "영상 처리가 요청되었어요, 처리가 끝나면 이메일로 알려드려요."
-                        );
                         setShowPanel(false);
                       } else {
-                        alert("이 영상은 영상 처리를 요청할 수 없어요.");
                         setShowPanel(false);
                       }
                     };
+                    setResult("try");
                     handleVideoProc();
                   }}
                 >
-                  요청하기
+                  {result == "try" ? <BarLoader /> : <>요청하기</>}
                 </Button>
               </>
             ))}

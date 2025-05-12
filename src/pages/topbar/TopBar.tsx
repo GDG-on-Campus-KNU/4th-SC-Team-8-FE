@@ -8,9 +8,13 @@ import { AuthContext, LoadToken, RemoveToken } from "../../shared/auth";
 import UserInfoModal from "./components/UserInfoModal";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { backend, google_login_redirect_uri } from "../../shared/ServerEndpoint";
+import {
+  backend,
+  google_login_redirect_uri,
+} from "../../shared/ServerEndpoint";
 import logo from "../../assets/logo.webp";
 import googleLogo from "../../assets/googleLogo.png";
+import { Link } from "react-router-dom";
 
 const TopBar = () => {
   const { isLoggedIn } = useContext(AuthContext);
@@ -18,7 +22,15 @@ const TopBar = () => {
   return (
     <>
       <TopBarWrapper>
-        <div style={{ display: "flex", justifyContent: "center" }}>
+        <Link
+          to="/"
+          style={{
+            color: "black",
+            textDecoration: "none",
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
           <InlineDiv
             style={{
               fontFamily: "Sunflower, sans-serif",
@@ -29,7 +41,7 @@ const TopBar = () => {
             Signory
           </InlineDiv>
           <img src={logo} style={{ height: "50px" }} />
-        </div>
+        </Link>
 
         {isLoggedIn ? <WelcomePanel /> : <LogInPanel />}
       </TopBarWrapper>
@@ -138,7 +150,7 @@ const LogInPanel = () => {
         setModalOpen={setEnableRegisterForm}
       />
       <div style={{ display: "flex", gap: "10px", paddingRight: "5px" }}>
-      <GoogleSignInButton />
+        <GoogleSignInButton />
         <Button
           onClick={() => {
             setEnableLoginForm(!enableLoginForm);
@@ -184,7 +196,10 @@ const GoogleSignInButton: React.FC = () => {
 
   return (
     <GoogleDesignButton onClick={() => redirectLogin()}>
-      <img src={googleLogo} style={{height: "20px", background: "white", borderRadius: "20px"}}/>
+      <img
+        src={googleLogo}
+        style={{ height: "20px", background: "white", borderRadius: "20px" }}
+      />
       구글 계정으로 로그인
     </GoogleDesignButton>
   );
