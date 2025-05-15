@@ -1,49 +1,106 @@
-# 4th-SC-Team-8-FE
+<div align="center">
 
-GDGoC 4기 Solution Challenge 8팀 Front-End
+## 'Signory', a sign language learning platform that learns by following along
 
-당신은 한글 버전 README를 읽고 있습니다. [
-[EN](./README_en.md)
+Signory, a combination of sign and story, is a platform that lets you learn sign language by following along with sign language storybooks or sign language learning videos on YouTube.
+
+Signory's web application-based service lowers the barrier to entry for sign language learning, and our platform digitally records and disseminates the unique language of sign language, contributing to linguistic diversity and cultural sustainability.
+
+[**We state that this project is built for learning & educational purposes only and will not be used for commercial purposes.**]
+
+</div>
+<br>
+
+## Participants
+
+<div align="center">
+  
+ |Frontend|AI|AI|Backend|
+ |:------:|:------:|:------:|:------:|
+ |[<img src="https://github.com/Moderator11.png" width="100px">](https://github.com/Moderator11)|[<img src="https://github.com/alsgh4442.png" width="100px">](https://github.com/alsgh4442)|[<img src="https://github.com/jyj1206.png" width="100px">](https://github.com/jyj1206)|[<img src="https://github.com/2iedo.png" width="100px">](https://github.com/2iedo)|
+ |[박수민](https://github.com/Moderator11)|[박민호](https://github.com/alsgh4442)|[정영진](https://github.com/jyj1206)|[이도훈](https://github.com/2iedo)|
+
+</div>
+
+## Overview
+
+Most of sign language learning platforms only allowed users to watch and imitate simple word-based actions through videos, and there is no way to verify whether the actions are correct.
+
+This makes it difficult for online-based sign language learners to learn what they are supposed to do and how to do it correctly.
+
+Recently, Nvidia launched 'Signs,' a new service offering active feedback for learning American Sign Language. However, its word-based approach currently limits the variety of vocabulary available.
+
+Our project, ‘Signory’ offers you opportunity to learn sentence-level actions through korean sign language-based videos with subtitles, and you can also check how accurate the actions are through similarity score. It's designed to handle the full vocabulary present in any Korean subtitled video, without relying on a pre-existing list.
+
+## System Architecture
+
+![System Architecture](images/architecture.png)
+
+## Use Case Diagram
+
+![Use Case Diagram](images/use_case.png)
+
+## Key Features
+
+### 1. Register YouTube video-based sign language learning videos
+
+- If there are many videos uploaded to YouTube and they have subtitles, you can use them for sign language learning. When you select a video, the AI server extracts gesture landmarks and compares them with the actual gestures to check the accuracy of the gestures during training.
+
+### 2. Perform sign language actions for each video segment
+
+- After selecting a video from YouTube, the video is played sentence by sentence during training, allowing you to learn sign language gestures for each sentence.
+
+### 3. Gesture feedback via Gemini
+
+- Users can ask Gemini for gestures with low hand language accuracy. This allows them to see the correct way to move a sentence or word, which they can follow to improve the accuracy of their sign language gestures.
+
+## Github Link
+
+FE : [Github](https://github.com/GDG-on-Campus-KNU/4th-SC-Team-8-FE)
+
+AI : [Github](https://github.com/GDG-on-Campus-KNU/4th-SC-Team-8-AI)
+
+BE : [Github](https://github.com/GDG-on-Campus-KNU/4th-SC-Team-8-BE)
+
+# GDGoC 4th Solution Challenge Team 8 Front-End
+
+You are currently reading english README [
+[KO](./README_ko.md)
 ]
 
-## 중요
+## Acknowledgement
 
-저희 팀은 YouTube 영상 데이터를 사용하는 것과 관련해 해당 프로젝트가 **잠재적인 저작권 문제**를 일으킬 수 있음을 인지하고 있습니다.
+We acknowledge the **potential copyright issues** associated with using YouTube video data.
 
 > [!CAUTION]
-> 해당 프로젝트는 오직 **교육 및 학습 목적**으로 설계되었으며 상업적인 용도로 사용되지 않을 것입니다. 해당 프로젝트를 사용하는 개발자에게는 모든 관련 저작권법 및 YouTube 서비스 약관을 준수할 책임이 있습니다.
+> This project is designed solely for **educational and learning purposes** and will not be used for commercial application. Users are responsible for ensuring their use of this project complies with all applicable copyright laws and YouTube's terms of service.
 
-## 실행 방법
+## How to run
 
-먼저 저장소를 로컬 저장소로 복제하세요.
+First, clone this repository into local storage.
 
 ```
 git clone git@github.com:GDG-on-Campus-KNU/4th-SC-Team-8-FE.git
 cd 4th-SC-Team-8-FE
 ```
 
-이후 다음 내용으로 .env 파일을 생성하세요.
-Youtube Data v3의 유효한 API 키가 필요합니다.
+Then create .env file with following contents.
+You will need valid api key from Youtube Data v3
 
 ```
 VITE_YOUTUBE_DATA_API_V3_KEY = '${YOUR_API_KEY_HERE}'
 ```
 
-`src/shared/ServerEndpoint및vite.config.ts`를 재구성하여 BE 서버 및 AI 서버 주소를 올바르게 지정하세요. 이 저장소에 업로드된 주소는 테스트 시점에 더 이상 액세스할 수 없을 수 있습니다.
+Reconfigure `src/shared/ServerEndpoint` and `vite.config.ts` to correctly address the BE server and AI server. Endpoint that is uploaded onto this repository is possibly deprecated and no longer accessable at the point of your testing.
 
-다음으로, 필요한 패키지를 설치하고 실행하세요.
+Now install required packages and run
 
 ```
 npm install
 npm run dev
 ```
 
-## 사용 기술
+## Used Technologies
 
 - React-Vite + Typescript
 - MediaPipe
-
-## 프로젝트 상세
-
-- 프로젝트: Signory
-- 목적: Learning sign language
